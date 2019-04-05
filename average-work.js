@@ -22,5 +22,5 @@ for(let i=0; i < 1000; i++){
     average = times.reduce((total, num) => (total + num))/times.length;
 
     console.log(`Time to mine block ${i} ==> ${timeDiff}ms. Difficulty: ${nextBlock.difficulty}. Average time: ${average}ms`);
-    console.log(blockchain);
+ 
 }
