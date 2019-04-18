@@ -1,5 +1,6 @@
 const Transaction = require ('./transaction');
 const Wallet = require('./index');
+const { verifySignature } = require('../util');
 describe('Transction', () => {
     let transaction, senderWallet, recipient, amount;
 
@@ -15,18 +16,45 @@ describe('Transction', () => {
         expect(transaction).toHaveProperty('id');
     });
 
-    describe('outpuMap', () => {
+    describe('outputMap', () => {
         it('has an `outputMap`', () => {
             expect(transaction).toHaveProperty('outputMap');
         });
+
+        it('outputs the amount to the recipient', () => {
+            expect(transaction.outputMap[recipient]).toEqual(amount);
+        });
+
+        it('outputs the remaining balance to the `senderWallet`', () => {
+            expect(transaction.outputMap[senderWallet.publicKey]).toEqual(senderWallet.balance - amount);
+        });
     });
     
+    describe('input', () => {
+        it('has an `input`', () => {
+            expect(transaction).toHaveProperty('input');
+        });
 
-    it('outputs the amount to the recipient', () => {
-        expect(transaction.outputMap[recipient]).toEqual(amount);
-    });
+        it('has a `timestamp` in the input', () => {
+            expect(transaction.input).toHaveProperty('timestamp');
+        });
 
-    it('outputs the remaining balance to the `senderWallet`', () => {
-        expect(transaction.outputMap[senderWallet.publicKey]).toEqual(senderWallet.balance - amount);
+        it('sets the `amount` to the `senderwallet` balance', () => {
+            expect(transaction.input.amount).toEqual(senderWallet.balance);
+        });
+
+        it('sets the `address` to the `senderWallet` publicKey', () => {
+            expect(transaction.input.address).toEqual(senderWallet.publicKey);
+        });
+
+        it('signs the input', () => {
+            expect(
+                verifySignature({
+                    publicKey: senderWallet.publicKey,
+                    data: transaction.outputMap,
+                    signature: transaction.input.signature
+                })
+            ).toBe(true);
+        });
     });
 });
