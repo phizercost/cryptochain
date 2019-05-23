@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom'; //Allows to dynamically components to html document
+import App from './components/App';
  
 render(
-    <div>Cryptochain in React!: Third Live Update</div>, 
+    <App />, 
     document.getElementById('root')
 );
