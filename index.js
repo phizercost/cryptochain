@@ -83,6 +83,19 @@ app.get('/api/wallet-info', (req, res) => {
     })
 });
 
+app.get('/api/known-addresses', (req,res) => {
+    const addressMap = {};
+
+    for (let block of blockchain.chain){
+        for(let transaction of block.data){
+            const recipient = Object.keys(transaction.outputMap);
+
+            recipient.forEach(recipient => addressMap[recipient] = recipient);
+        }
+    }
+    res.json(Object.keys(addressMap));
+});
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, './client/dist/index.html'));
 });
@@ -145,7 +158,6 @@ if(isDevelopment){
 let PEER_PORT;
 
 if(process.env.GENERATE_PEER_PORT === 'true') {
-    // PEER_PORT = DEFAULT_PORT + 1-1000; Math.ceil(Math.random() * 1000);
     PEER_PORT = DEFAULT_PORT + Math.ceil(Math.random() * 1000);
 }
 
